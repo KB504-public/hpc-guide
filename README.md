@@ -9,10 +9,15 @@
 2. 在登录节点的 terminal 中：
 
     ```bash
-    git clone <repo-url>
+    git clone https://github.com/KB504-public/hpc-guide.git
     cd hpc-guide
-    bash hpc_env_check.sh
     ```
+
+## 脚本说明
+
+- **`hpc_env_check.sh`** - 登录节点环境检测脚本，检查系统信息、已安装软件和 Conda 配置
+- **`gpu_env_check.sh`** - 计算节点 GPU 环境检测脚本，检查 NVIDIA 驱动、CUDA 版本和 GPU 设备
+- **`install_conda.sh`** - 自动化安装 Miniconda 脚本，用于配置 Python 虚拟环境
 
 ## 联系方式
 
