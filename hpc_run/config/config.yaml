@@ -1,0 +1,16 @@
+# HPC Run 配置文件
+
+# 训练任务配置
+train:
+  work_dir: "/hpc_run/tests"                              # 训练脚本所在目录
+  command: "python train_dummy.py --steps 10"    # 完整的训练命令
+  log:
+    dir: "logs"                                  # 日志目录
+    save: false                                  # 是否保存 run.py 的日志
+
+# 通知配置（必需）
+notification:
+  type: "console"                                  # console 或 xxtui
+  xxtui:
+    api_key: ""                  # API 密钥（或使用环境变量 XXTUI_KEY）
+    timeout: 8

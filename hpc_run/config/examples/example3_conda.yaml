@@ -1,0 +1,23 @@
+# 示例 3: 使用 Conda 环境
+# 使用场景：训练需要在特定的 Conda 环境中运行
+
+train:
+  work_dir: "/path/to/your/project"
+  # 使用 conda run 在指定环境中运行
+  command: "conda run -n pytorch_env python train.py --epochs 50"
+  
+  log:
+    dir: "logs"
+    save: true
+
+notification:
+  type: "console"
+  
+  xxtui:
+    api_key: ""
+    timeout: 8
+
+monitor:
+  enabled: false
+  interval: 2.0
+  timeout: 0

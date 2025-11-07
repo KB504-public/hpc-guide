@@ -1,0 +1,71 @@
+# HPC Run - 配置文件（带详细注释）
+# 功能：监控训练脚本执行，完成后自动发送通知
+# 用途：避免忘记关闭 HPC 平台导致持续计费
+
+# ========================================
+# 训练任务配置（必需）
+# ========================================
+train:
+  # 工作目录：训练脚本所在的目录（必需）
+  # - 可以是绝对路径：/home/user/my_project
+  # - 可以是相对路径：./my_project（相对于本项目根目录）
+  # - 相对路径将自动转换为绝对路径
+  work_dir: "tests"
+  
+  # 完整的训练命令（必需）
+  # - 直接写你原本要在终端执行的命令
+  # - 示例 1: "python train.py"
+  # - 示例 2: "python train.py --epochs 100 --lr 0.001"
+  # - 示例 3: "bash run_train.sh"
+  # - 示例 4: "conda run -n myenv python train.py --config config.json"
+  command: "python train_dummy.py --steps 20 --sleep 0.2"
+  
+  # 日志配置（可选）
+  log:
+    # 日志保存目录（相对于 work_dir）
+    # - 本工具会捕获训练脚本的所有输出并保存到此目录
+    # - 如果不需要保存，将 save 设为 false
+    dir: "logs"
+    
+    # 是否保存日志到文件
+    # - true: 保存训练输出到日志文件
+    # - false: 只在控制台显示，不保存
+    save: true
+
+# ========================================
+# 通知配置（必需）
+# ========================================
+# 训练完成后如何通知你
+notification:
+  # 通知器类型（必需）
+  # - "console": 仅在控制台打印完成信息（调试用）
+  # - "xxtui": 通过 xxtui 推送到手机/电脑（推荐用于 HPC）
+  type: "console"
+  
+  # xxtui 推送配置
+  # 使用方法：
+  #   1. 访问 https://xxtui.com 注册账号
+  #   2. 创建应用获取 API 密钥
+  #   3. 填写到下方 api_key 或设置环境变量 XXTUI_KEY
+  xxtui:
+    # API 密钥（当 type 为 xxtui 时必需）
+    # 方式 1: 直接填写（不推荐，会暴露在配置文件中）
+    # api_key: "your-api-key-here"
+    # 方式 2: 使用环境变量（推荐）
+    # export XXTUI_KEY="your-api-key-here"
+    api_key: ""
+    
+    # 请求超时时间（秒）
+    timeout: 8
+
+# ========================================
+# 监控配置（可选，暂未启用）
+# ========================================
+# 未来可用于监控 CPU、内存、GPU 使用情况
+monitor:
+  # 是否启用资源监控
+  enabled: false
+  # 资源采样间隔（秒）
+  interval: 2.0
+  # 超时时间（秒，0 表示无限制）
+  timeout: 0

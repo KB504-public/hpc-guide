@@ -1,0 +1,23 @@
+# 示例 2: 带参数的训练脚本
+# 使用场景：需要传入超参数、配置文件等参数的训练
+
+train:
+  work_dir: "/path/to/your/project"
+  # 完整的命令，包含所有参数
+  command: "python train.py --epochs 100 --batch-size 32 --lr 0.001 --config configs/resnet50.yaml"
+  
+  log:
+    dir: "logs"
+    save: true
+
+notification:
+  type: "console"
+  
+  xxtui:
+    api_key: ""
+    timeout: 8
+
+monitor:
+  enabled: false
+  interval: 2.0
+  timeout: 0

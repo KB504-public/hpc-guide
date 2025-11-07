@@ -1,0 +1,22 @@
+# 示例 1: 简单 Python 训练脚本（无参数）
+# 使用场景：最基础的训练脚本，不需要任何参数
+
+train:
+  work_dir: "/path/to/your/project"
+  command: "python train.py"
+  
+  log:
+    dir: "logs"
+    save: true
+
+notification:
+  type: "console"
+  
+  xxtui:
+    api_key: ""
+    timeout: 8
+
+monitor:
+  enabled: false
+  interval: 2.0
+  timeout: 0

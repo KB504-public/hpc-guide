@@ -1,0 +1,23 @@
+# 示例 4: 使用 Bash 脚本
+# 使用场景：通过 Shell 脚本启动训练（脚本内可能包含环境设置、多步骤任务等）
+
+train:
+  work_dir: "/path/to/your/project"
+  # 直接运行 Shell 脚本
+  command: "bash scripts/run_training.sh"
+  
+  log:
+    dir: "logs"
+    save: true
+
+notification:
+  type: "console"
+  
+  xxtui:
+    api_key: ""
+    timeout: 8
+
+monitor:
+  enabled: false
+  interval: 2.0
+  timeout: 0
