@@ -1,11 +1,8 @@
 # 电子科技大学高性能计算平台使用指南
 
 [![HPC](https://img.shields.io/badge/Platform-UESTC_HPC-blue.svg)](https://hpc.uestc.edu.cn/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> 本仓库提供电子科技大学高性能计算中心（HPC）的完整使用指南，包括环境配置、工具脚本和训练任务监控系统。
-
----
+本仓库提供电子科技大学高性能计算中心（HPC）的完整使用指南，包括环境配置、工具脚本和训练任务监控系统。
 
 ## 📚 快速导航
 
@@ -23,8 +20,6 @@
 | [gpu_env_check.sh](scripts/gpu_env_check.sh) | GPU 环境检测 | 检查 NVIDIA 驱动、CUDA、PyTorch 安装建议 |
 | [install_conda.sh](scripts/install_conda.sh) | 自动安装 Miniconda | 一键配置 Python 虚拟环境 |
 | [**hpc_run/**](hpc_run/) | **训练任务监控系统** | **自动监控训练进程，完成后推送通知（防止忘关机扣费）** ⭐ |
-
----
 
 ## 🎯 快速开始
 
@@ -67,14 +62,10 @@ python run.py
 
 详见：**[hpc_run 完整文档](hpc_run/README.md)** →
 
----
-
 ## 📖 详细文档
 
 - **[配置流程完整指南](配置流程.md)** - 包含准备工作、登录节点、计算节点的详细步骤
 - **[HPC Run 使用文档](hpc_run/README.md)** - 训练监控工具的配置和使用说明
-
----
 
 ## 🤝 贡献与反馈
 
@@ -83,14 +74,6 @@ python run.py
 - 提交 [Issue](../../issues)
 - 发起 [Pull Request](../../pulls)
 - 联系维护者
-
----
-
-## 📄 License
-
-MIT License - 详见 [LICENSE](LICENSE) 文件
-
----
 
 **⭐ 如果这个项目对你有帮助，欢迎 Star 支持！**
 
