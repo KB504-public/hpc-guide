@@ -42,17 +42,22 @@ notification:
   # - "xxtui": 通过 xxtui 推送到手机/电脑（推荐用于 HPC）
   type: "console"
   
+  # API 密钥配置文件路径（推荐方式，更安全）
+  # - 将 api_keys.yaml.example 复制为 api_keys.yaml
+  # - 填写真实的 API 密钥
+  # - api_keys.yaml 已被 .gitignore 忽略，不会被提交到 Git
+  api_keys_file: "config/api_keys.yaml"
+  
   # xxtui 推送配置
   # 使用方法：
   #   1. 访问 https://xxtui.com 注册账号
   #   2. 创建应用获取 API 密钥
-  #   3. 填写到下方 api_key 或设置环境变量 XXTUI_KEY
+  #   3. 通过以下三种方式之一提供密钥（优先级从高到低）：
+  #      - 方式 1: 在 api_keys.yaml 文件中设置 xxtui_api_key（推荐）
+  #      - 方式 2: 设置环境变量 export XXTUI_KEY="your-api-key"
+  #      - 方式 3: 直接在下方 api_key 字段填写（不推荐，会暴露）
   xxtui:
-    # API 密钥（当 type 为 xxtui 时必需）
-    # 方式 1: 直接填写（不推荐，会暴露在配置文件中）
-    # api_key: "your-api-key-here"
-    # 方式 2: 使用环境变量（推荐）
-    # export XXTUI_KEY="your-api-key-here"
+    # API 密钥（不推荐直接填写，建议使用 api_keys_file）
     api_key: ""
     
     # 请求超时时间（秒）

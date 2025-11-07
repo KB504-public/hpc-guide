@@ -67,6 +67,10 @@ class ConfigLoader:
                 work_dir = Path(train['work_dir'])
                 log_dir = work_dir / train['log']['dir']
                 train['log']['dir'] = str(log_dir.resolve())
+        
+        # 处理 API 密钥配置
+        if 'notification' in self.config:
+            self._load_api_keys()
     
     def _resolve_path(self, path_str: str) -> str:
         """
@@ -90,6 +94,38 @@ class ConfigLoader:
         
         # 返回跨平台的路径字符串
         return str(path.resolve())
+    
+    def _load_api_keys(self):
+        """从 API 密钥文件加载密钥"""
+        api_keys_file = self.config['notification'].get('api_keys_file')
+        
+        # 如果没有指定 API 密钥文件，直接返回
+        if not api_keys_file:
+            return
+        
+        # 解析 API 密钥文件路径
+        api_keys_path = self._resolve_path(api_keys_file)
+        api_keys_path = Path(api_keys_path)
+        
+        # 如果文件不存在，跳过（使用环境变量或配置文件中的密钥）
+        if not api_keys_path.exists():
+            return
+        
+        try:
+            # 加载 API 密钥文件
+            with open(api_keys_path, 'r', encoding='utf-8') as f:
+                api_keys = yaml.safe_load(f)
+            
+            # 将 xxtui_api_key 注入到 xxtui 配置中（如果配置中未设置）
+            if 'xxtui' in self.config['notification']:
+                xxtui_config = self.config['notification']['xxtui']
+                # 只有当配置中的 api_key 为空时，才从文件读取
+                if not xxtui_config.get('api_key') and api_keys.get('xxtui_api_key'):
+                    xxtui_config['api_key'] = api_keys['xxtui_api_key']
+        
+        except Exception as e:
+            # 加载失败时只打印警告，不中断流程
+            print(f"[WARN] 加载 API 密钥文件失败: {e}")
     
 
     

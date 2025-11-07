@@ -11,14 +11,24 @@
 
 ## 快速开始
 
-1. 配置任务
+1. **配置 API 密钥（如使用推送通知）**
+
+    ```bash
+    # 复制 API 密钥示例文件
+    cp config/api_keys.yaml.example config/api_keys.yaml
+    
+    # 编辑 api_keys.yaml，填写你的真实 API 密钥
+    # 注意：api_keys.yaml 已被 .gitignore 忽略，不会被提交到 Git
+    ```
+
+2. **配置训练任务**
 
     编辑 `config/config.yaml`：
 
     1. 添加你的训练脚本所在的文件夹和训练使用的命令；
 
        在 `config/examples/` 目录下提供了多种场景的配置示例，例如参考 `example3_conda.yaml` 来使用 Conda 环境。
-    2. 选择推送方法并填写你的 API；
+    2. 选择推送方法（console 或 xxtui）；
 
     ```yaml
     train:
@@ -29,17 +39,34 @@
         save: true
     
     notification:
-      type: "xxtui"
+      type: "xxtui"                      # 使用 xxtui 推送
+      api_keys_file: "config/api_keys.yaml"  # API 密钥文件路径
       xxtui:
-        api_key: ""
         timeout: 8
     ```
 
-2. 运行
+3. **运行**
 
     ```bash
     python run.py
     ```
+
+## API 密钥安全说明
+
+为了保护你的 API 密钥安全，本工具支持三种方式配置密钥（优先级从高到低）：
+
+1. **API 密钥文件（推荐）** ✅
+   - 将 `config/api_keys.yaml.example` 复制为 `config/api_keys.yaml`
+   - 填写真实密钥
+   - `api_keys.yaml` 已被 `.gitignore` 忽略，不会被提交到 Git
+
+2. **环境变量**
+   ```bash
+   export XXTUI_KEY="your-api-key-here"
+   ```
+
+3. **直接写在 config.yaml**（不推荐）
+   - 容易被误提交到 Git 造成泄露
 
 ## 项目结构
 
@@ -48,6 +75,8 @@ hpc-run/
 ├── run.py                  # 主程序
 ├── config/
 │   ├── config.yaml         # 配置文件
+│   ├── api_keys.yaml       # API 密钥文件（需手动创建，已被 .gitignore）
+│   ├── api_keys.yaml.example  # API 密钥文件示例
 │   └── examples/           # 配置示例
 ├── src/
 │   ├── core/

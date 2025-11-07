@@ -34,6 +34,9 @@ wheels/
 hpc_run/tests/logs/
 *.log
 
+# API 密钥配置文件（包含敏感信息）
+hpc_run/config/api_keys.yaml
+
 # IDE
 .vscode/
 .idea/

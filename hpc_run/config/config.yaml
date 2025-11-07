@@ -2,7 +2,7 @@
 
 # 训练任务配置
 train:
-  work_dir: "/hpc_run/tests"                              # 训练脚本所在目录
+  work_dir: "./tests"                              # 训练脚本所在目录
   command: "python train_dummy.py --steps 10"    # 完整的训练命令
   log:
     dir: "logs"                                  # 日志目录
@@ -10,7 +10,15 @@ train:
 
 # 通知配置（必需）
 notification:
-  type: "console"                                  # console 或 xxtui
+  type: "xxtui"                                  # console 或 xxtui
+  
+  # API 密钥配置文件路径（推荐方式，更安全）
+  # 将 api_keys.yaml.example 复制为 api_keys.yaml 并填写真实密钥
+  api_keys_file: "config/api_keys.yaml"           # 相对于项目根目录
+  
   xxtui:
-    api_key: ""                  # API 密钥（或使用环境变量 XXTUI_KEY）
+    # 方式 1: 从 api_keys_file 读取（推荐）
+    # 方式 2: 直接填写（不推荐，会暴露在配置文件中）
+    # 方式 3: 使用环境变量 XXTUI_KEY
+    api_key: ""
     timeout: 8
