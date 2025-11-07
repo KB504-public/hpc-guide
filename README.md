@@ -2,28 +2,21 @@
 
 [![HPC](https://img.shields.io/badge/Platform-UESTC_HPC-blue.svg)](https://hpc.uestc.edu.cn/)
 
-本仓库提供电子科技大学高性能计算中心（HPC）的完整使用指南，包括环境配置、工具脚本和训练任务监控系统。
+本仓库提供电子科技大学高性能计算中心（HPC）的完整使用指南，涵盖账号配置、环境搭建、工具脚本与训练任务监控等内容。  
 
-## 📚 快速导航
+**核心内容速览**  
 
-### 🚀 新手入门
-- **[完整配置流程](配置流程.md)** - 从零开始的详细指南
-  - 准备工作（开户、VPN）
-  - 登录节点配置（Conda、环境检测）
-  - 计算节点使用（VSCode、GPU 检测）
-
-### 🔧 工具箱
-
-| 工具 | 功能 | 使用场景 |
-|------|------|----------|
-| [hpc_env_check.sh](scripts/hpc_env_check.sh) | 登录节点环境检测 | 检查系统信息、Python、常用工具 |
-| [gpu_env_check.sh](scripts/gpu_env_check.sh) | GPU 环境检测 | 检查 NVIDIA 驱动、CUDA、PyTorch 安装建议 |
-| [install_conda.sh](scripts/install_conda.sh) | 自动安装 Miniconda | 一键配置 Python 虚拟环境 |
-| [**hpc_run/**](hpc_run/) | **训练任务监控系统** | **自动监控训练进程，完成后推送通知（防止忘关机扣费）** ⭐ |
+- **[配置流程](SETUP_GUIDE.md)**：开户、登录节点配置、计算节点使用
+- **常用脚本**：  
+  - [`hpc_env_check.sh`](scripts/hpc_env_check.sh)：登录节点检测  
+  - [`gpu_env_check.sh`](scripts/gpu_env_check.sh)：GPU/CUDA 检测  
+  - [`install_conda.sh`](scripts/install_conda.sh)：自动安装 Miniconda  
+  - [`hpc_run/`](hpc_run/)：训练任务监控系统 ⭐ 自动提醒防止忘关机扣费  
 
 ## 🎯 快速开始
 
-### 第一步：克隆仓库
+## 第一步：克隆仓库
+
 ```bash
 # 在登录节点的 terminal 中执行
 git clone https://github.com/Y006/hpc-guide.git
@@ -42,30 +35,34 @@ bash scripts/install_conda.sh
 bash scripts/gpu_env_check.sh
 ```
 
-### 第三步：使用训练监控工具（推荐）
+### 第三步：使用训练监控工具
+
+HPC 平台采用双脚本架构，将训练和监控分离到不同节点：
+
 ```bash
-# 进入训练监控工具目录
+# 1. 编辑配置文件
 cd hpc_run
+vim config/config.yaml  # 配置训练命令、工作目录、通知方式
 
-# 查看详细使用说明
-cat README.md
+# 2. 在登录节点（免费）启动监控程序
+python train_monitor.py   # 持续运行，等待训练完成
 
-# 配置并运行你的训练任务（自动监控+通知）
-python run.py
+# 3. 在计算节点（计费）运行训练
+python train_wrapper.py   # 执行训练，完成后通知监控器
 ```
 
-💡 **为什么要用训练监控工具？**
-- ✅ 训练完成自动推送手机通知
-- ✅ 避免忘记关闭计算节点导致持续扣费
+💡 **为什么要分离？**
+- ✅ 监控程序在免费的登录节点运行，不产生费用
+- ✅ 计算节点仅运行训练，完成即可关闭
+- ✅ 训练完成自动推送通知，避免忘记关机扣费
 - ✅ 无需修改训练代码，套壳运行即可
-- ✅ 自动保存完整训练日志
 
-详见：**[hpc_run 完整文档](hpc_run/README.md)** →
+详见：**[HPC 使用文档](hpc_run/HPC_USAGE.md)** →
 
 ## 📖 详细文档
 
-- **[配置流程完整指南](配置流程.md)** - 包含准备工作、登录节点、计算节点的详细步骤
-- **[HPC Run 使用文档](hpc_run/README.md)** - 训练监控工具的配置和使用说明
+- **[配置流程完整指南](SETUP_GUIDE.md)** - 包含准备工作、登录节点、计算节点的详细步骤
+- **[HPC 训练监控使用文档](hpc_run/HPC_USAGE.md)** - 双脚本架构详细说明和配置指南
 
 ## 🤝 贡献与反馈
 
