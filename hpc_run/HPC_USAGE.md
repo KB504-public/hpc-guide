@@ -23,9 +23,28 @@
 
 ## 使用步骤
 
-### 1. 配置通知服务
+### 1. 配置文件设置
 
-创建 API 密钥文件（如果还没有）：
+编辑 `config/config.yaml`，配置训练任务和通知：
+
+```yaml
+# 训练任务配置
+train:
+  work_dir: "/path/to/your/project"       # 训练脚本所在目录
+  command: "python train.py --epochs 100"  # 训练命令
+  log:
+    dir: "logs"                            # 日志目录
+    save: false                            # 是否保存包装器日志
+
+# 通知配置
+notification:
+  type: "xxtui"                            # console 或 xxtui
+  api_keys_file: "config/api_keys.yaml"    # API 密钥文件路径
+  xxtui:
+    timeout: 8
+```
+
+如果使用 xxtui 推送，创建 API 密钥文件：
 ```bash
 cd hpc_run/config
 cp api_keys.yaml.example api_keys.yaml
@@ -34,51 +53,31 @@ cp api_keys.yaml.example api_keys.yaml
 
 ### 2. 在计算节点上启动训练
 
-在你的训练项目目录中运行：
+确保已编辑 `config/config.yaml` 设置好训练参数，然后运行：
 
 ```bash
-# 基本用法
-python /path/to/hpc_run/train_wrapper.py \
-    --work-dir /path/to/your/project \
-    --command "python train.py"
-
-# 带参数的训练命令
-python /path/to/hpc_run/train_wrapper.py \
-    --work-dir /path/to/your/project \
-    --command "python train.py --epochs 100 --batch-size 32"
-
-# 自定义日志目录
-python /path/to/hpc_run/train_wrapper.py \
-    --work-dir /path/to/your/project \
-    --command "python train.py" \
-    --log-dir ./custom_logs
+python /path/to/hpc_run/train_wrapper.py
 ```
 
-**参数说明**:
-- `--work-dir`: 训练项目的工作目录（必需）
-- `--command`: 训练命令（必需）
-- `--log-dir`: 日志保存目录（可选，默认为 `logs`）
+脚本会自动：
+- 从 `config/config.yaml` 读取训练配置
+- 切换到工作目录执行训练命令
+- 捕获并保存日志
+- 训练完成后创建 `.train_complete.json` 标记文件
 
 ### 3. 在登录节点上启动监控
 
 在另一个终端（登录节点）运行：
 
 ```bash
-# 持续监控模式（推荐）
-python /path/to/hpc_run/train_monitor.py \
-    --work-dir /path/to/your/project \
-    --interval 60
-
-# 单次检查模式
-python /path/to/hpc_run/train_monitor.py \
-    --work-dir /path/to/your/project \
-    --once
+python /path/to/hpc_run/train_monitor.py
 ```
 
-**参数说明**:
-- `--work-dir`: 训练项目的工作目录（必需，与 wrapper 保持一致）
-- `--interval`: 检查间隔秒数（可选，默认 60 秒）
-- `--once`: 仅检查一次，不持续轮询（可选）
+脚本会自动：
+- 从 `config/config.yaml` 读取配置
+- 每 60 秒检查一次完成标记文件
+- 发现训练完成后生成报告并发送通知
+- 清理标记文件
 
 ### 4. 完成后处理
 
@@ -151,13 +150,24 @@ report:
 screen -S train_monitor
 
 # 在 screen 中运行监控
-python /path/to/hpc_run/train_monitor.py \
-    --work-dir /path/to/your/project \
-    --interval 60
+python /path/to/hpc_run/train_monitor.py
 
 # 按 Ctrl+A 然后 D 分离会话
 # 训练完成后，可以用 screen -r train_monitor 恢复查看
 ```
+
+## 配置说明
+
+所有配置都在 `config/config.yaml` 中统一管理，简化使用：
+
+- **work_dir**: 训练脚本所在目录（必需）
+- **command**: 训练命令（必需）
+- **log.dir**: 日志保存目录（默认 `logs`）
+- **notification.type**: 通知方式，`console`（控制台）或 `xxtui`（推送）
+- **api_keys_file**: API 密钥文件路径（如使用 xxtui）
+
+**检查间隔**: 固定为 60 秒  
+**标记文件**: 固定为 `.train_complete.json`
 
 ## 对比：实验室服务器使用方式
 

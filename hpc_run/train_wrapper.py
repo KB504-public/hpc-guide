@@ -1,36 +1,45 @@
 #!/usr/bin/env python3
 """
-训练包装器 - 在计算节点运行
-负责：
-1. 套壳执行训练脚本
-2. 捕获训练输出
-3. 训练完成后保存完成标记文件（包含执行信息）
+HPC 训练包装器 - 在计算节点运行
+用于包装训练任务执行，完成后写入标记文件供监控程序检测
+
+使用方式: python train_wrapper.py
+配置文件: config/config.yaml
 """
-import sys
 import os
-import subprocess
-import time
+import sys
 import json
-import argparse
+import time
+import shutil
+import subprocess
 from pathlib import Path
 from datetime import datetime
 
+# 添加项目路径以导入 src 模块
+sys.path.insert(0, str(Path(__file__).parent))
 
-def main():
-    parser = argparse.ArgumentParser(description='训练任务包装器')
-    parser.add_argument('--work-dir', required=True, help='训练脚本所在目录')
-    parser.add_argument('--command', required=True, help='训练命令')
-    parser.add_argument('--log-dir', default='logs', help='日志保存目录')
-    parser.add_argument('--marker-file', default='.train_complete.json', 
-                       help='完成标记文件名')
-    args = parser.parse_args()
+from src.utils.config_loader import ConfigLoader
+
+
+def run_training(work_dir: Path, command: str, log_dir: Path, marker_file: str = '.train_complete.json') -> int:
+    """
+    执行训练任务
     
+    Args:
+        work_dir: 工作目录
+        command: 训练命令
+        log_dir: 日志目录
+        marker_file: 完成标记文件名
+        
+    Returns:
+        退出码
+    """
     # 切换到工作目录
-    work_dir = Path(args.work_dir).resolve()
+    work_dir = Path(work_dir).resolve()
     os.chdir(work_dir)
     
     # 准备日志目录
-    log_dir = work_dir / args.log_dir
+    log_dir = work_dir / log_dir
     log_dir.mkdir(parents=True, exist_ok=True)
     
     # 生成日志文件名（带时间戳）
@@ -38,9 +47,9 @@ def main():
     log_file = log_dir / f"train_{timestamp}.log"
     
     print(f"[训练包装器] 工作目录: {work_dir}")
-    print(f"[训练包装器] 执行命令: {args.command}")
+    print(f"[训练包装器] 执行命令: {command}")
     print(f"[训练包装器] 日志文件: {log_file}")
-    print(f"[训练包装器] 完成标记: {args.marker_file}")
+    print(f"[训练包装器] 完成标记: {marker_file}")
     print("-" * 60)
     
     # 记录开始时间
@@ -48,11 +57,10 @@ def main():
     start_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # 执行训练命令
-    command_parts = args.command.split()
+    command_parts = command.split()
     
     # 智能处理 Python 命令
     if command_parts[0] in ("python", "python3"):
-        import shutil
         # 尝试找到可用的 Python
         for py_cmd in ['python3', 'python', sys.executable]:
             if shutil.which(py_cmd):
@@ -65,7 +73,7 @@ def main():
     # 启动训练进程，捕获输出
     with open(log_file, 'w', encoding='utf-8') as f:
         f.write(f"[训练开始] {start_time_str}\n")
-        f.write(f"[命令] {args.command}\n")
+        f.write(f"[命令] {command}\n")
         f.write(f"[工作目录] {work_dir}\n")
         f.write("-" * 60 + "\n\n")
         f.flush()
@@ -108,24 +116,51 @@ def main():
     print(f"[训练包装器] 退出码: {return_code}")
     
     # 创建完成标记文件
-    marker_file = work_dir / args.marker_file
+    marker_path = work_dir / marker_file
     completion_info = {
         "status": "completed",
         "start_time": start_time_str,
         "end_time": end_time_str,
         "elapsed_seconds": elapsed,
         "return_code": return_code,
-        "command": args.command,
+        "command": command,
         "work_dir": str(work_dir),
         "log_file": str(log_file),
         "timestamp": time.time()
     }
     
-    with open(marker_file, 'w', encoding='utf-8') as f:
+    with open(marker_path, 'w', encoding='utf-8') as f:
         json.dump(completion_info, f, indent=2, ensure_ascii=False)
     
-    print(f"[训练包装器] 已创建完成标记: {marker_file}")
+    print(f"[训练包装器] 已创建完成标记: {marker_path}")
     
+    return return_code
+
+
+def main():
+    """主函数 - 从配置文件读取参数并执行训练"""
+    # 默认配置文件路径
+    project_root = Path(__file__).parent
+    config_path = project_root / "config" / "config.yaml"
+    
+    print(f"[训练包装器] 使用配置文件: {config_path}")
+    
+    # 加载配置
+    loader = ConfigLoader(config_path)
+    config = loader.load()
+    
+    if not loader.validate():
+        print("[错误] 配置文件验证失败")
+        return 1
+    
+    # 从配置文件读取参数
+    work_dir = config['train']['work_dir']
+    command = config['train']['command']
+    log_dir = config['train']['log']['dir']
+    marker_file = '.train_complete.json'  # 固定标记文件名
+    
+    # 执行训练
+    return_code = run_training(work_dir, command, log_dir, marker_file)
     return return_code
 
 

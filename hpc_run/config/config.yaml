@@ -5,7 +5,7 @@ train:
   work_dir: "./tests"                              # 训练脚本所在目录
   command: "python train_dummy.py --steps 10"    # 完整的训练命令
   log:
-    dir: "logs"                                  # 日志目录
+    dir: "/Users/qiujinyu/Computational_Imaging/高性能计算平台使用/hpc-guide/train_wrapper_log"                                  # 日志目录
     save: false                                  # 是否保存 run.py 的日志
 
 # 通知配置（必需）
